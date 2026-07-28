@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YantraGuru - AI Repair Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar for Chat History -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h2>YantraGuru</h2>
+        <button id="themeToggle" class="btn-physics">🌗 Theme</button>
+      </div>
+      <button id="newChatBtn" class="btn-physics new-chat">+ New Diagnostic</button>
+      <div class="history-list" id="historyList"></div>
+    </aside>
+
+    <!-- Main Diagnostic Studio -->
+    <main class="chat-area">
+      <header class="chat-header">
+        <button id="toggleSidebarBtn" class="btn-physics">☰</button>
+        <h1>Mechanic & Appliance Troubleshooter</h1>
+      </header>
+
+      <div class="messages-container" id="messagesContainer">
+        <div class="welcome-card">
+          <h2>Namaste! 🛠️</h2>
+          <p>Snap a photo of your machine, appliance, or vehicle part for immediate repair diagnosis and workarounds.</p>
+        </div>
+      </div>
+
+      <!-- Controls & Input Area -->
+      <footer class="input-container">
+        <div class="media-preview" id="mediaPreview"></div>
+        <div class="input-bar">
+          <button id="cameraBtn" class="btn-physics" title="Open Native Camera">📷</button>
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none;">
+          
+          <input type="text" id="userInput" placeholder="Describe the issue or ask a question..." autocomplete="off">
+          
+          <button id="sendBtn" class="btn-physics">Send</button>
+          <button id="stopBtn" class="btn-physics stop-btn" style="display:none;">⏹ Stop</button>
+        </div>
+      </footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

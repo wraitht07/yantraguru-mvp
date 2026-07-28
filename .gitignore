@@ -1,0 +1,19 @@
+# Security / Local Envs
+.env
+.env.local
+*.env
+
+# Python & Virtual Environments
+.venv/
+venv/
+ENV/
+__pycache__/
+*.py[cod]
+
+# IDE & OS Garbage
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Vercel Build Artifacts
+.vercel
