@@ -5,8 +5,8 @@
   <img src="https://img.shields.io/badge/FastAPI-0.100+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
   <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5"/>
   <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3"/>
-  <img src="https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript"/>
-  <img src="https://img.shields.io/badge/Google_Gemini-2.5_Flash-8E44AD?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript"/>
+  <img src="https://img.shields.io/badge/Google_Gemini-3.6_Flash-8E44AD?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
   <img src="https://img.shields.io/badge/Vercel-Deployment-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel"/>
   <img src="https://img.shields.io/badge/UV-Dependency_Manager-DE5E97?style=for-the-badge&logo=python&logoColor=white" alt="UV"/>
 </p>
@@ -121,7 +121,7 @@ Previous conversations are cached locally using `localStorage`, allowing users t
 | Layer              | Technology               |
 | ------------------ | ------------------------ |
 | Backend            | FastAPI                  |
-| AI Model           | Google Gemini 2.5 Flash  |
+| AI Model           | Google Gemini 3.6 Flash  |
 | Frontend           | HTML5, CSS3, JavaScript  |
 | Streaming          | Server-Sent Events (SSE) |
 | Dependency Manager | UV                       |
