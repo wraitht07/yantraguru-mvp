@@ -1,5 +1,6 @@
 import os
 import base64
+import re
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -12,11 +13,10 @@ load_dotenv()
 
 app = FastAPI(title="YantraGuru API")
 
-# Fix CORS Blocking between Port 3000 and 8000
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Allows all local dev origins
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,  # Fixed CORS conflict
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -32,23 +32,31 @@ class DiagnosticRequest(BaseModel):
 async def chat_stream(req: DiagnosticRequest):
     if not client:
         async def err_gen():
-            yield "data: Error: GEMINI_API_KEY is missing or invalid in backend .env file.\n\n"
+            yield "data: Error: GEMINI_API_KEY is missing or invalid in backend environment variables.\n\n"
         return StreamingResponse(err_gen(), media_type="text/event-stream")
 
     async def generate():
         try:
             contents = []
+            mime_type = "image/jpeg"
+
             if req.image_base64 and "," in req.image_base64:
+                # Dynamically extract MIME type (e.g. image/png, image/jpeg)
+                mime_match = re.search(r"data:(image/\w+);base64,", req.image_base64)
+                if mime_match:
+                    mime_type = mime_match.group(1)
+
                 raw_b64 = req.image_base64.split(",")[1]
                 img_bytes = base64.b64decode(raw_b64)
                 contents.append(
-                    types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg")
+                    types.Part.from_bytes(data=img_bytes, mime_type=mime_type)
                 )
             
             if req.prompt:
                 contents.append(req.prompt)
 
-            response = client.models.generate_content_stream(
+            # Fixed: Model name updated to valid model & used async client (.aio)
+            response = await client.aio.models.generate_content_stream(
                 model="gemini-3.6-flash",
                 contents=contents,
                 config=types.GenerateContentConfig(
@@ -57,7 +65,7 @@ async def chat_stream(req: DiagnosticRequest):
                 )
             )
 
-            for chunk in response:
+            async for chunk in response:
                 if chunk.text:
                     yield f"data: {chunk.text.replace('\n', '\\n')}\n\n"
             yield "data: [DONE]\n\n"

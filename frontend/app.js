@@ -101,11 +101,11 @@ function toggleControls(isGenerating) {
 }
 
 // --- 5. Stream Communication with Backend ---
+a// --- 5. Stream Communication with Backend ---
 async function sendQuery() {
   const text = userInput.value.trim();
   if (!text && !activeImageBase64) return;
 
-  // Append User Message
   appendMessage('user', text, activeImageBase64);
   userInput.value = '';
 
@@ -115,17 +115,15 @@ async function sendQuery() {
   toggleControls(true);
   currentAbortController = new AbortController();
 
-  // Prepare Empty Assistant Message Box
   const botMsgTextNode = appendMessage('assistant', '');
 
   try {
-    // Replace the hardcoded URL with a relative API path:
     const response = await fetch('/api/chat/stream', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal: currentAbortController.signal
-  });
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      signal: currentAbortController.signal
+    });
 
     if (!response.ok) {
       throw new Error(`Server returned HTTP ${response.status}`);
@@ -134,13 +132,17 @@ async function sendQuery() {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let resultText = '';
+    let buffer = '';
 
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      const lines = chunk.split('\n\n');
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n\n');
+      
+      // Keep incomplete chunk in buffer
+      buffer = lines.pop() || '';
 
       for (const line of lines) {
         if (line.startsWith('data: ')) {
@@ -157,33 +159,13 @@ async function sendQuery() {
       botMsgTextNode.innerText += '\n[Generation stopped by user]';
     } else {
       console.error('Fetch Error:', err);
-      botMsgTextNode.innerText = `Error: Could not receive response from server (${err.message}). Check backend terminal output.`;
+      botMsgTextNode.innerText = `Error: Could not receive response from server (${err.message}).`;
     }
   } finally {
     toggleControls(false);
     currentAbortController = null;
     saveToHistory(text, botMsgTextNode.innerText);
   }
-}
-
-function appendMessage(role, text, imgSrc = null) {
-  const messageDiv = document.createElement('div');
-  messageDiv.className = `message ${role}`;
-
-  if (imgSrc) {
-    const img = document.createElement('img');
-    img.src = imgSrc;
-    img.className = 'message-img';
-    messageDiv.appendChild(img);
-  }
-
-  const textNode = document.createElement('span');
-  textNode.innerText = text;
-  messageDiv.appendChild(textNode);
-
-  messagesContainer.appendChild(messageDiv);
-  messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  return textNode;
 }
 
 // --- 6. Local Storage History with Deletion Support ---
