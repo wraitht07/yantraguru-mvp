@@ -101,7 +101,7 @@ function toggleControls(isGenerating) {
 }
 
 // --- 5. Stream Communication with Backend ---
-a// --- 5. Stream Communication with Backend ---
+// --- 5. Stream Communication with Backend ---
 async function sendQuery() {
   const text = userInput.value.trim();
   if (!text && !activeImageBase64) return;

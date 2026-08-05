@@ -16,7 +16,7 @@ app = FastAPI(title="YantraGuru API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=False,  # Fixed CORS conflict
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -28,7 +28,9 @@ class DiagnosticRequest(BaseModel):
     prompt: str
     image_base64: str | None = None
 
+# Updated route path to match Vercel API rewrites
 @app.post("/api/chat/stream")
+@app.post("/chat/stream")
 async def chat_stream(req: DiagnosticRequest):
     if not client:
         async def err_gen():
@@ -41,7 +43,6 @@ async def chat_stream(req: DiagnosticRequest):
             mime_type = "image/jpeg"
 
             if req.image_base64 and "," in req.image_base64:
-                # Dynamically extract MIME type (e.g. image/png, image/jpeg)
                 mime_match = re.search(r"data:(image/\w+);base64,", req.image_base64)
                 if mime_match:
                     mime_type = mime_match.group(1)
@@ -55,13 +56,12 @@ async def chat_stream(req: DiagnosticRequest):
             if req.prompt:
                 contents.append(req.prompt)
 
-            # Fixed: Model name updated to valid model & used async client (.aio)
+            # System instructions without custom temperature override
             response = await client.aio.models.generate_content_stream(
                 model="gemini-3.6-flash",
                 contents=contents,
                 config=types.GenerateContentConfig(
-                    system_instruction="You are YantraGuru, an expert Indian mechanic assistant. Provide step-by-step repair guides and workarounds.",
-                    temperature=0.3,
+                    system_instruction="You are YantraGuru, an expert Indian mechanic assistant. Provide step-by-step repair guides and workarounds."
                 )
             )
 
