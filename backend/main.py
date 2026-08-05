@@ -1,6 +1,7 @@
 import os
 import base64
 import re
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -9,7 +10,10 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 
-load_dotenv()
+# Force load .env from root directory if running locally
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+load_dotenv()  # Fallback standard load
 
 app = FastAPI(title="YantraGuru API")
 
@@ -21,8 +25,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+# Fetch, strip whitespace/newlines, and validate key
+raw_key = os.getenv("GEMINI_API_KEY", "")
+GEMINI_API_KEY = raw_key.strip().replace("\n", "").replace("\r", "").replace('"', '').replace("'", '')
+
+client = None
+if GEMINI_API_KEY:
+    try:
+        client = genai.Client(api_key=GEMINI_API_KEY)
+    except Exception as e:
+        print(f"Failed to initialize Gemini Client: {e}")
+        client = None
 
 class DiagnosticRequest(BaseModel):
     prompt: str
