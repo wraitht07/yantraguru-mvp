@@ -16,11 +16,22 @@ const newChatBtn = document.getElementById('newChatBtn');
 const historyList = document.getElementById('historyList');
 
 // --- 1. Dark/Light Theme Toggle ---
-themeToggle.addEventListener('click', () => {
-  const currentTheme = document.documentElement.getAttribute('data-theme');
-  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('yg_theme', newTheme);
+document.addEventListener("DOMContentLoaded", () => {
+  const userInput = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  if (sendBtn) {
+    sendBtn.addEventListener('click', sendQuery);
+  }
+
+  if (userInput) {
+    userInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendQuery();
+      }
+    });
+  }
 });
 
 // Load saved theme on startup
